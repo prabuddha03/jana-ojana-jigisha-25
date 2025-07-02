@@ -1,18 +1,27 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import RegistrationForm from '@/components/RegistrationForm';
 import RulesModal from '@/components/RulesModal';
 import { Toaster } from 'react-hot-toast';
+import janaOjanaBg from '../../public/JanaOjana.webp';
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <main className="min-h-screen relative">
-      <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: "url('/janaOjana.webp')" }}
+      <Image
+        src={janaOjanaBg}
+        alt="Jana Ojana Quiz Competition Background"
+        placeholder="blur"
+        quality={100}
+        fill
+        sizes="100vw"
+        style={{
+          objectFit: 'cover',
+        }}
       />
       <div className="absolute inset-0 bg-gradient-to-br from-[#3611524c] to-[#72388f] opacity-95" />
       
