@@ -21,20 +21,20 @@ export default function ThankYou({ studentName, schoolName, onBack }: ThankYouPr
     };
   }, []);
 
-  const generateCalendarLink = () => {
-    const eventDate = '20250823T053000Z'; // August 23, 2025, 11:00 AM IST (05:30 UTC)
-    const endDate = '20250823T113000Z'; // August 23, 2025, 5:00 PM IST (11:30 UTC)
-    const title = encodeURIComponent('Jana Ojana 2025 - School Quiz Competition');
-    const details = encodeURIComponent('The School Quiz Competition - Jana Ojana 2025. Get ready for an exciting day of knowledge and competition!');
-    const location = encodeURIComponent('Competition Venue - Details will be shared soon');
+  // const generateCalendarLink = () => {
+  //   const eventDate = '20250823T053000Z'; // August 23, 2025, 11:00 AM IST (05:30 UTC)
+  //   const endDate = '20250823T113000Z'; // August 23, 2025, 5:00 PM IST (11:30 UTC)
+  //   const title = encodeURIComponent('Jana Ojana 2025 - School Quiz Competition');
+  //   const details = encodeURIComponent('The School Quiz Competition - Jana Ojana 2025. Get ready for an exciting day of knowledge and competition!');
+  //   const location = encodeURIComponent('Competition Venue - Details will be shared soon');
     
-    return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${eventDate}/${endDate}&details=${details}&location=${location}`;
-  };
+  //   return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${eventDate}/${endDate}&details=${details}&location=${location}`;
+  // };
 
-  const openLocationMap = () => {
-    // This will be updated with actual venue coordinates
-    window.open('https://maps.app.goo.gl/9dPCqpsi43KE3XR98', '_blank');
-  };
+  // const openLocationMap = () => {
+  //   // This will be updated with actual venue coordinates
+  //   window.open('https://maps.app.goo.gl/9dPCqpsi43KE3XR98', '_blank');
+  // };
 
   const socialLinks = {
     instagram: 'https://www.instagram.com/pragyauemk?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==',
@@ -127,7 +127,7 @@ export default function ThankYou({ studentName, schoolName, onBack }: ThankYouPr
               href={socialLinks.instagram}
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-white text-gray-700 font-medium py-3 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center justify-center group border-2 border-pink-400 hover:border-pink-500 shadow-lg hover:shadow-xl"
+              className="bg-white text-gray-700 font-medium py-3 px-4 rounded-lg transition-all duration-300 transform hover:scale-105  flex items-center justify-center group border-2 border-pink-400 hover:border-pink-500 shadow-lg hover:shadow-xl"
               style={{
                 boxShadow: '8px 8px 16px #d1d9e6, -8px -8px 16px #ffffff'
               }}
@@ -142,7 +142,7 @@ export default function ThankYou({ studentName, schoolName, onBack }: ThankYouPr
               href={socialLinks.facebook}
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-white text-gray-700 font-medium py-3 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center justify-center group border-2 border-blue-500 hover:border-blue-600 shadow-lg hover:shadow-xl"
+              className="bg-white text-gray-700 font-medium py-3 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center group border-2 border-blue-500 hover:border-blue-600 shadow-lg hover:shadow-xl"
               style={{
                 boxShadow: '8px 8px 16px #d1d9e6, -8px -8px 16px #ffffff'
               }}

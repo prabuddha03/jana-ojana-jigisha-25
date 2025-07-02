@@ -7,6 +7,7 @@ import { toast } from 'react-hot-toast';
 import Fuse from 'fuse.js';
 import { schools } from '@/lib/schools';
 import ThankYou from './ThankYou';
+import Image from 'next/image';
 
 const stopWords = new Set(['the', 'for', 'of', 'and']);
 const getAcronym = (schoolName: string): string => {
@@ -585,9 +586,17 @@ export default function RegistrationForm() {
                   <div className="w-16 h-16 flex-shrink-0 bg-gray-200 rounded-lg flex items-center justify-center">
                     <svg className="w-8 h-8 text-gray-600" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 0v12h8V4H6zm3 1a1 1 0 100 2h2a1 1 0 100-2H9zM8 8a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1zm1 3a1 1 0 100 2h2a1 1 0 100-2h-2z" clipRule="evenodd" /></svg>
                   </div>
-                ) : (
-                  <img src={idCardPreview!} alt="ID Card Preview" className="w-16 h-16 rounded-lg object-cover flex-shrink-0"/>
-                )}
+                ) : idCardPreview ? (
+                  <div className="w-16 h-16 rounded-lg overflow-hidden">
+                    <Image 
+                      src={idCardPreview} 
+                      alt="ID Card Preview"
+                      width={64}
+                      height={64}
+                      className="w-full h-full object-cover" 
+                    />
+                  </div>
+                ) : null}
                 <div className="flex-grow overflow-hidden">
                   <p className="font-semibold text-gray-800 truncate">{idCard.name}</p>
                   <p className="text-sm text-gray-500">{(idCard.size / 1024 / 1024).toFixed(2)} MB</p>
