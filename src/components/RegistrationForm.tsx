@@ -215,7 +215,12 @@ export default function RegistrationForm() {
         const combined = [...suggestions, ...fuseResults];
         const uniqueSuggestions = [...new Set(combined)];
         
-        setSchoolSuggestions(uniqueSuggestions.slice(0, 5));
+        const filteredSuggestions = uniqueSuggestions.filter(
+          s => s.toLowerCase() !== value.toLowerCase()
+        );
+        const finalSuggestions = [value, ...filteredSuggestions];
+
+        setSchoolSuggestions(finalSuggestions.slice(0, 5));
       } else {
         setSchoolSuggestions([]);
       }
