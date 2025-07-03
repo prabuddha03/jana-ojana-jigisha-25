@@ -1,6 +1,12 @@
 import { NextResponse } from 'next/server';
 import { MongoClient } from 'mongodb';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { RateLimiterMemory } from 'rate-limiter-flexible';
+
+const rateLimiter = new RateLimiterMemory({
+  points: 3, // 5 requests
+  duration: 60, // per 60 seconds (1 minute)
+});
 
 const uri = process.env.MONGODB_URI;
 if (!uri) {
@@ -29,6 +35,14 @@ const r2 = new S3Client({
 });
 
 export async function POST(request: Request) {
+  const ip = request.headers.get('x-forwarded-for') || '127.0.0.1';
+
+  try {
+    await rateLimiter.consume(ip);
+  } catch (error) {
+    return NextResponse.json({ message: 'Too Many Requests' }, { status: 429 });
+  }
+
   try {
     const formData = await request.formData();
 
