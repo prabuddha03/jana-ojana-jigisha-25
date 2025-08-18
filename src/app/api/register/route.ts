@@ -94,7 +94,11 @@ export async function POST(request: Request) {
 
     const idCardUrl = `${publicUrl}/${idCardKey}`;
 
-    const result = await collection.insertOne({ ...data, idCardUrl });
+    const result = await collection.insertOne({ 
+      ...data, 
+      idCardUrl,
+      createdAt: new Date()
+    });
 
     return NextResponse.json(
       { message: 'Registration successful!', data: { ...data, _id: result.insertedId } },

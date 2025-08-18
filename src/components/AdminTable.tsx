@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, Search, Filter, Calendar, School, User, Phone, Mail, Eye, RefreshCw, X } from 'lucide-react';
-import Image from 'next/image';
 
 interface Registration {
   _id: string;
@@ -14,6 +13,7 @@ interface Registration {
   mobileNumber: string;
   altMobileNumber: string;
   idCardUrl: string;
+  createdAt: string;
 }
 
 interface TableData {
@@ -36,8 +36,8 @@ export default function AdminTable() {
   const [refreshing, setRefreshing] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [classFilter, setClassFilter] = useState('');
-  const [sortBy, setSortBy] = useState('studentName');
-  const [sortOrder, setSortOrder] = useState('asc');
+  const [sortBy, setSortBy] = useState('createdAt');
+  const [sortOrder, setSortOrder] = useState('desc');
   const [modalOpen, setModalOpen] = useState(false);
   const [currentImageUrl, setCurrentImageUrl] = useState('');
 
@@ -101,6 +101,16 @@ export default function AdminTable() {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric'
+    });
+  };
+
+  const formatTimestamp = (dateString: string) => {
+    return new Date(dateString).toLocaleString('en-IN', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
     });
   };
 
@@ -223,6 +233,18 @@ export default function AdminTable() {
                     )}
                   </div>
                 </th>
+                <th 
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleSort('createdAt')}
+                >
+                  <div className="flex items-center gap-1">
+                    <Calendar className="h-4 w-4" />
+                    Registration Date
+                    {sortBy === 'createdAt' && (
+                      <span className="ml-1">{sortOrder === 'asc' ? '↑' : '↓'}</span>
+                    )}
+                  </div>
+                </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   <div className="flex items-center gap-1">
                     <Phone className="h-4 w-4" />
@@ -260,6 +282,11 @@ export default function AdminTable() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {formatDate(registration.dob)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <span title={new Date(registration.createdAt).toLocaleString('en-IN')}>
+                      {formatTimestamp(registration.createdAt)}
+                    </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900">{registration.mobileNumber}</div>
@@ -362,9 +389,9 @@ export default function AdminTable() {
       {/* ID Card Modal */}
       {modalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-4xl max-h-[90vh] w-full flex flex-col">
+          <div className="bg-white rounded-lg max-w-6xl max-h-[90vh] w-full flex flex-col">
             <div className="flex justify-between items-center p-4 border-b">
-              <h3 className="text-lg font-semibold text-gray-900">ID Card</h3>
+              <h3 className="text-lg font-semibold text-gray-900">ID Card Document</h3>
               <button
                 onClick={closeModal}
                 className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -374,19 +401,103 @@ export default function AdminTable() {
             </div>
             <div className="flex-1 p-4 overflow-auto">
               <div className="flex justify-center">
-                <div className="relative w-full h-96">
-                  <Image
-                    src={currentImageUrl}
-                    alt="ID Card"
-                    fill
-                    className="object-contain"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xMDAgMTAwTDEwMCAxMDBaIiBzdHJva2U9IiM5Q0E0QUYiIHN0cm9rZS13aWR0aD0iMiIvPgo8dGV4dCB4PSIxMDAiIHk9IjEwNSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSIjNkI3Mjg4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5JbWFnZSBub3QgYXZhaWxhYmxlPC90ZXh0Pgo8L3N2Zz4K';
-                    }}
-                  />
-                </div>
+                {currentImageUrl ? (
+                  <div className="w-full">
+                    {/* Check file type and render accordingly */}
+                    {(() => {
+                      const url = currentImageUrl.toLowerCase();
+                      if (url.endsWith('.pdf')) {
+                        return (
+                          <div className="w-full h-[70vh] border border-gray-300 rounded-lg">
+                            <iframe
+                              src={currentImageUrl}
+                              className="w-full h-full"
+                              title="ID Card PDF"
+                              onError={() => {
+                                const iframe = document.querySelector('iframe');
+                                if (iframe) {
+                                  iframe.style.display = 'none';
+                                  const container = iframe.parentElement;
+                                  if (container) {
+                                    container.innerHTML = `
+                                      <div class="flex items-center justify-center h-full text-center text-gray-500">
+                                        <div>
+                                          <div class="text-4xl mb-2">📄</div>
+                                          <p class="text-lg">Failed to load PDF</p>
+                                          <p class="text-sm">The PDF could not be displayed</p>
+                                        </div>
+                                      </div>
+                                    `;
+                                  }
+                                }
+                              }}
+                            />
+                          </div>
+                        );
+                      } else if (url.endsWith('.jpg') || url.endsWith('.jpeg') || url.endsWith('.png') || url.endsWith('.gif') || url.endsWith('.webp')) {
+                        return (
+                          <div className="relative w-full h-[70vh]">
+                            <img
+                              src={currentImageUrl}
+                              alt="ID Card"
+                              className="w-full h-full object-contain border border-gray-300 rounded-lg"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.style.display = 'none';
+                                const errorDiv = target.parentElement;
+                                if (errorDiv) {
+                                  errorDiv.innerHTML = `
+                                    <div class="flex items-center justify-center h-full text-center text-gray-500">
+                                      <div>
+                                        <div class="text-4xl mb-2">❌</div>
+                                        <p class="text-lg">Failed to load image</p>
+                                        <p class="text-sm">The image could not be displayed</p>
+                                      </div>
+                                    </div>
+                                  `;
+                                }
+                              }}
+                            />
+                          </div>
+                        );
+                      } else {
+                        // For other file types, show a generic viewer with download option
+                        return (
+                          <div className="w-full h-[70vh] border border-gray-300 rounded-lg flex items-center justify-center">
+                            <div className="text-center text-gray-500">
+                              <div className="text-6xl mb-4">📎</div>
+                              <p className="text-lg">Document Preview Not Available</p>
+                              <p className="text-sm mb-4">This file type cannot be previewed in the browser</p>
+                              <p className="text-xs text-gray-400">File: {currentImageUrl.split('/').pop()}</p>
+                            </div>
+                          </div>
+                        );
+                      }
+                    })()}
+                    
+                    {/* Download button */}
+                    <div className="mt-4 text-center">
+                      <a
+                        href={currentImageUrl}
+                        download
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center px-4 py-2 bg-[#72388f] text-white rounded-lg hover:bg-[#361152] transition-colors duration-300"
+                      >
+                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        Download Document
+                      </a>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center text-gray-500">
+                    <div className="text-6xl mb-4">📄</div>
+                    <p className="text-lg">No document available</p>
+                    <p className="text-sm">The ID card document could not be loaded.</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>

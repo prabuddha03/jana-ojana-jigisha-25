@@ -24,8 +24,8 @@ export async function GET(request: Request) {
   const limit = parseInt(searchParams.get('limit') || '10');
   const search = searchParams.get('search') || '';
   const classFilter = searchParams.get('class') || '';
-  const sortBy = searchParams.get('sortBy') || 'studentName';
-  const sortOrder = searchParams.get('sortOrder') || 'asc';
+  const sortBy = searchParams.get('sortBy') || 'createdAt';
+  const sortOrder = searchParams.get('sortOrder') || 'desc';
 
   try {
     const db = await connectToDatabase();
@@ -49,7 +49,12 @@ export async function GET(request: Request) {
     }
 
     // Build sort options
-    const sortOptions: Sort = { [sortBy]: sortOrder === 'asc' ? 1 : -1 };
+    let sortOptions: Sort = { [sortBy]: sortOrder === 'asc' ? 1 : -1 };
+    
+    // Handle timestamp sorting
+    if (sortBy === 'createdAt') {
+      sortOptions = { createdAt: sortOrder === 'asc' ? 1 : -1 };
+    }
 
     // Get total count for pagination
     const total = await collection.countDocuments(filter);
@@ -74,7 +79,8 @@ export async function GET(request: Request) {
       email: reg.email,
       mobileNumber: reg.mobileNumber,
       altMobileNumber: reg.altMobileNumber,
-      idCardUrl: reg.idCardUrl
+      idCardUrl: reg.idCardUrl,
+      createdAt: reg.createdAt
     }));
 
     return NextResponse.json({
