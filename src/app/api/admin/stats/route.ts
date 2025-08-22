@@ -44,10 +44,30 @@ export async function GET() {
       classCounts[className] = (classCounts[className] || 0) + 1;
     });
 
+    // Calculate attendance statistics
+    const attended = allRegistrations.filter(reg => reg.isAttended === true).length;
+    const notAttended = allRegistrations.filter(reg => reg.isAttended === false).length;
+    const attendanceRate = totalParticipants > 0 ? Math.round((attended / totalParticipants) * 100) : 0;
+
+    // Calculate certificate statistics
+    const issued = allRegistrations.filter(reg => reg.certificateIssued === true).length;
+    const notIssued = allRegistrations.filter(reg => reg.certificateIssued === false).length;
+    const issuanceRate = totalParticipants > 0 ? Math.round((issued / totalParticipants) * 100) : 0;
+
     return NextResponse.json({
       totalSchools,
       totalParticipants,
-      classCounts
+      classCounts,
+      attendanceStats: {
+        attended,
+        notAttended,
+        attendanceRate
+      },
+      certificateStats: {
+        issued,
+        notIssued,
+        issuanceRate
+      }
     });
 
   } catch (error) {

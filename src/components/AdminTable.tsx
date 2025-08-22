@@ -14,6 +14,8 @@ interface Registration {
   altMobileNumber: string;
   idCardUrl: string;
   createdAt: string;
+  isAttended: boolean;
+  certificateIssued: boolean;
 }
 
 interface TableData {
@@ -75,6 +77,58 @@ export default function AdminTable() {
 
   const handleRefresh = () => {
     fetchRegistrations(true);
+  };
+
+  const toggleAttendance = async (id: string, newValue: boolean) => {
+    try {
+      const response = await fetch(`/api/admin/registrations/${id}/attendance`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ isAttended: newValue }),
+      });
+
+      if (response.ok) {
+        // Update local state
+        setData(prev => ({
+          ...prev,
+          registrations: prev.registrations.map(reg =>
+            reg._id === id ? { ...reg, isAttended: newValue } : reg
+          )
+        }));
+      } else {
+        console.error('Failed to update attendance');
+      }
+    } catch (error) {
+      console.error('Error updating attendance:', error);
+    }
+  };
+
+  const toggleCertificate = async (id: string, newValue: boolean) => {
+    try {
+      const response = await fetch(`/api/admin/registrations/${id}/certificate`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ certificateIssued: newValue }),
+      });
+
+      if (response.ok) {
+        // Update local state
+        setData(prev => ({
+          ...prev,
+          registrations: prev.registrations.map(reg =>
+            reg._id === id ? { ...reg, certificateIssued: newValue } : reg
+          )
+        }));
+      } else {
+        console.error('Failed to update certificate status');
+      }
+    } catch (error) {
+      console.error('Error updating certificate status:', error);
+    }
   };
 
   const openModal = (imageUrl: string) => {
@@ -258,6 +312,12 @@ export default function AdminTable() {
                   </div>
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Attendance
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Certificate
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   ID Card
                 </th>
               </tr>
@@ -298,6 +358,30 @@ export default function AdminTable() {
                     <div className="text-sm text-gray-900 max-w-xs truncate">
                       {registration.email}
                     </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <button
+                      onClick={() => toggleAttendance(registration._id, !registration.isAttended)}
+                      className={`inline-flex items-center px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                        registration.isAttended
+                          ? 'bg-green-100 text-green-800 hover:bg-green-200'
+                          : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                      }`}
+                    >
+                      {registration.isAttended ? '✓ Attended' : '○ Not Attended'}
+                    </button>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <button
+                      onClick={() => toggleCertificate(registration._id, !registration.certificateIssued)}
+                      className={`inline-flex items-center px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                        registration.certificateIssued
+                          ? 'bg-blue-100 text-blue-800 hover:bg-blue-200'
+                          : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                      }`}
+                    >
+                      {registration.certificateIssued ? '✓ Issued' : '○ Not Issued'}
+                    </button>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <button

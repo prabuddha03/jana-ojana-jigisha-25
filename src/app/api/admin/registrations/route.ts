@@ -26,6 +26,8 @@ export async function GET(request: Request) {
   const classFilter = searchParams.get('class') || '';
   const sortBy = searchParams.get('sortBy') || 'createdAt';
   const sortOrder = searchParams.get('sortOrder') || 'desc';
+  const isAttended = searchParams.get('isAttended');
+  const certificateIssued = searchParams.get('certificateIssued');
 
   try {
     const db = await connectToDatabase();
@@ -46,6 +48,16 @@ export async function GET(request: Request) {
     // Add class filter
     if (classFilter) {
       filter.class = classFilter;
+    }
+
+    // Add attendance filter
+    if (isAttended !== null && isAttended !== undefined) {
+      filter.isAttended = isAttended === 'true';
+    }
+
+    // Add certificate filter
+    if (certificateIssued !== null && certificateIssued !== undefined) {
+      filter.certificateIssued = certificateIssued === 'true';
     }
 
     // Build sort options
@@ -80,7 +92,9 @@ export async function GET(request: Request) {
       mobileNumber: reg.mobileNumber,
       altMobileNumber: reg.altMobileNumber,
       idCardUrl: reg.idCardUrl,
-      createdAt: reg.createdAt
+      createdAt: reg.createdAt,
+      isAttended: reg.isAttended || false,
+      certificateIssued: reg.certificateIssued || false
     }));
 
     return NextResponse.json({

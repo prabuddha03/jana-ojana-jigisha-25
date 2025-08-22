@@ -1,12 +1,6 @@
 import { NextResponse } from 'next/server';
 import { MongoClient } from 'mongodb';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
-import { RateLimiterMemory } from 'rate-limiter-flexible';
-
-const rateLimiter = new RateLimiterMemory({
-  points: 3, // 5 requests
-  duration: 60, // per 60 seconds (1 minute)
-});
 
 const uri = process.env.MONGODB_URI;
 if (!uri) {
@@ -35,22 +29,10 @@ const r2 = new S3Client({
 });
 
 export async function POST(request: Request) {
-  const ip = request.headers.get('x-forwarded-for') || '127.0.0.1';
-
-  try {
-    await rateLimiter.consume(ip);
-  } catch (error) {
-    return NextResponse.json({ message: 'Too Many Requests' }, { status: 429 });
-  }
-
   try {
     const formData = await request.formData();
 
-    const idCard = formData.get('idCard') as File;
-
-    if (!idCard) {
-      return NextResponse.json({ message: 'ID Card is required.' }, { status: 400 });
-    }
+    const idCard = formData.get('idCard') as File | null;
 
     const data = {
       studentName: formData.get('studentName') as string,
@@ -80,34 +62,38 @@ export async function POST(request: Request) {
       );
     }
 
-    const idCardBuffer = Buffer.from(await idCard.arrayBuffer());
-    const idCardKey = `id-cards/${Date.now()}-${idCard.name}`;
+    let idCardUrl = '';
+    
+    if (idCard) {
+      const idCardBuffer = Buffer.from(await idCard.arrayBuffer());
+      const idCardKey = `id-cards/${Date.now()}-${idCard.name}`;
 
-    await r2.send(
-      new PutObjectCommand({
-        Bucket: r2BucketName,
-        Key: idCardKey,
-        Body: idCardBuffer,
-        ContentType: idCard.type,
-      })
-    );
+      await r2.send(
+        new PutObjectCommand({
+          Bucket: r2BucketName,
+          Key: idCardKey,
+          Body: idCardBuffer,
+          ContentType: idCard.type,
+        })
+      );
 
-    const idCardUrl = `${publicUrl}/${idCardKey}`;
+      idCardUrl = `${publicUrl}/${idCardKey}`;
+    }
 
     const result = await collection.insertOne({ 
       ...data, 
       idCardUrl,
       createdAt: new Date(),
-      isAttended: false,
+      isAttended: true, // Always true for central registration
       certificateIssued: false
     });
 
     return NextResponse.json(
-      { message: 'Registration successful!', data: { ...data, _id: result.insertedId } },
+      { message: 'Registration successful! Participant marked as attended.', data: { ...data, _id: result.insertedId } },
       { status: 201 }
     );
   } catch (error) {
     console.error('Registration failed:', error);
     return NextResponse.json({ message: 'Registration failed.' }, { status: 500 });
   }
-} 
+}

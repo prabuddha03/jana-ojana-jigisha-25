@@ -65,6 +65,36 @@ export default function AdminDashboard() {
         </div>
       </div>
 
+      {/* Navigation */}
+      <div className="bg-white shadow-md mx-4 sm:mx-6 lg:mx-8 -mt-2 rounded-b-lg">
+        <nav className="flex flex-wrap gap-4 p-4">
+          <a 
+            href="/admin/dashboard" 
+            className="px-4 py-2 bg-[#72388f] text-white rounded-lg"
+          >
+            Dashboard
+          </a>
+          <a 
+            href="/admin/attendance" 
+            className="px-4 py-2 text-gray-600 hover:text-[#72388f] transition-colors"
+          >
+            Attendance
+          </a>
+          <a 
+            href="/admin/central-registration" 
+            className="px-4 py-2 text-gray-600 hover:text-[#72388f] transition-colors"
+          >
+            Central Registration
+          </a>
+          <a 
+            href="/admin/certificate" 
+            className="px-4 py-2 text-gray-600 hover:text-[#72388f] transition-colors"
+          >
+            Certificates
+          </a>
+        </nav>
+      </div>
+
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <AdminStats />

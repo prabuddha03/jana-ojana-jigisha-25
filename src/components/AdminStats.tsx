@@ -7,13 +7,33 @@ interface StatsData {
   totalSchools: number;
   totalParticipants: number;
   classCounts: { [key: string]: number };
+  attendanceStats: {
+    attended: number;
+    notAttended: number;
+    attendanceRate: number;
+  };
+  certificateStats: {
+    issued: number;
+    notIssued: number;
+    issuanceRate: number;
+  };
 }
 
 export default function AdminStats() {
   const [stats, setStats] = useState<StatsData>({
     totalSchools: 0,
     totalParticipants: 0,
-    classCounts: {}
+    classCounts: {},
+    attendanceStats: {
+      attended: 0,
+      notAttended: 0,
+      attendanceRate: 0
+    },
+    certificateStats: {
+      issued: 0,
+      notIssued: 0,
+      issuanceRate: 0
+    }
   });
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -127,6 +147,55 @@ export default function AdminStats() {
             </div>
             <div className="bg-[#72388f] bg-opacity-10 p-3 rounded-full">
               <GraduationCap className="h-6 w-6 text-[#72388f]" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Attendance and Certificate Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div className="bg-white rounded-xl p-6 shadow-lg border-l-4 border-green-500">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-800">Attendance Overview</h3>
+            <div className="bg-green-500 bg-opacity-10 p-3 rounded-full">
+              <Users className="h-6 w-6 text-green-500" />
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-4">
+            <div className="text-center">
+              <p className="text-2xl font-bold text-green-600">{stats.attendanceStats.attended}</p>
+              <p className="text-sm text-gray-600">Attended</p>
+            </div>
+            <div className="text-center">
+              <p className="text-2xl font-bold text-gray-600">{stats.attendanceStats.notAttended}</p>
+              <p className="text-sm text-gray-600">Not Attended</p>
+            </div>
+            <div className="text-center">
+              <p className="text-2xl font-bold text-blue-600">{stats.attendanceStats.attendanceRate}%</p>
+              <p className="text-sm text-gray-600">Rate</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl p-6 shadow-lg border-l-4 border-blue-500">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-800">Certificate Status</h3>
+            <div className="bg-blue-500 bg-opacity-10 p-3 rounded-full">
+              <GraduationCap className="h-6 w-6 text-blue-500" />
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-4">
+            <div className="text-center">
+              <p className="text-2xl font-bold text-blue-600">{stats.certificateStats.issued}</p>
+              <p className="text-sm text-gray-600">Issued</p>
+            </div>
+            <div className="text-center">
+              <p className="text-2xl font-bold text-gray-600">{stats.certificateStats.notIssued}</p>
+              <p className="text-sm text-gray-600">Not Issued</p>
+            </div>
+            <div className="text-center">
+              <p className="text-2xl font-bold text-green-600">{stats.certificateStats.issuanceRate}%</p>
+              <p className="text-sm text-gray-600">Rate</p>
             </div>
           </div>
         </div>
