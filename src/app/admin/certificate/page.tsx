@@ -35,7 +35,7 @@ export default function AdminCertificate() {
     
     try {
       // Fetch pending certifications (attended but no certificate)
-      const pendingResponse = await fetch('/api/admin/registrations?isAttended=true&certificateIssued=false');
+      const pendingResponse = await fetch('/api/admin/registrations?isAttended=true&certificateIssued=false&limit=1000');
       if (pendingResponse.ok) {
         const pendingData = await pendingResponse.json();
         const pendingRegs = pendingData.registrations || [];
@@ -44,7 +44,7 @@ export default function AdminCertificate() {
       }
 
       // Fetch completed certifications (attended and certificate issued)
-      const completedResponse = await fetch('/api/admin/registrations?isAttended=true&certificateIssued=true');
+      const completedResponse = await fetch('/api/admin/registrations?isAttended=true&certificateIssued=true&limit=1000');
       if (completedResponse.ok) {
         const completedData = await completedResponse.json();
         const completedRegs = completedData.registrations || [];
